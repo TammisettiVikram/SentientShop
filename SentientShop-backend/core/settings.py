@@ -1,0 +1,65 @@
+from pathlib import Path
+from datetime import timedelta
+import os
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+STRIPE_SECRET_KEY = "sk_test_your_key_here"
+
+SECRET_KEY = "dev-secret-key"
+DEBUG = True
+
+ALLOWED_HOSTS = []
+
+INSTALLED_APPS = [
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+
+    "rest_framework",
+    "corsheaders",
+
+    "apps.accounts",
+    "apps.store",
+    "apps.carts",
+    "apps.orders",
+]
+
+AUTH_USER_MODEL = "accounts.User"
+
+MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+]
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
+}
+
+STATIC_URL = "/static/"
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticatedOrReadOnly",
+    ),
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "AUTH_HEADER_TYPES": ("Bearer",),
+}
