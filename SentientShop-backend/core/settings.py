@@ -9,8 +9,12 @@ STRIPE_SECRET_KEY = "sk_test_your_key_here"
 SECRET_KEY = "dev-secret-key"
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.railway.app",
+]
 
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
