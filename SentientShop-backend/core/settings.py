@@ -4,7 +4,7 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 ROOT_URLCONF = "core.urls"
-
+WSGI_APPLICATION = "core.wsgi.application"
 
 STRIPE_SECRET_KEY = "sk_test_your_key_here"
 
