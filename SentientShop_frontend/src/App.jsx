@@ -1,5 +1,9 @@
 import Products from "./pages/Products";
 
 export default function App() {
-  return <Products />;
+  return (
+    <div className="min-h-screen bg-gray-100">
+      <Products />
+    </div>
+  );
 }
