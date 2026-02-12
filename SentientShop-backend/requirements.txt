@@ -8,3 +8,4 @@ stripe==8.4.0
 gunicorn
 psycopg2-binary
 dj-database-url
+simplejwt

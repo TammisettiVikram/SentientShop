@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.urls import path
+from .views import CartView, CartItemDetailView
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from apps.carts.views import CartViewSet
@@ -17,4 +19,8 @@ urlpatterns += [
 ]
 urlpatterns += [
     path("api/orders/", include("apps.orders.urls")),
+]
+urlpatterns = [
+    path("", CartView.as_view()),
+    path("<int:item_id>/", CartItemDetailView.as_view()),
 ]

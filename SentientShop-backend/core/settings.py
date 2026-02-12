@@ -1,5 +1,6 @@
 from pathlib import Path
 from datetime import timedelta
+from datetime import timedelta
 import os
 import dj_database_url
 
@@ -8,7 +9,7 @@ ROOT_URLCONF = "core.urls"
 WSGI_APPLICATION = "core.wsgi.application"
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
-STRIPE_SECRET_KEY = "sk_test_your_key_here"
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
 
 SECRET_KEY = "dev-secret-key"
 DEBUG = True
@@ -94,3 +95,13 @@ TEMPLATES = [
         },
     },
 ]
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "AUTH_HEADER_TYPES": ("Bearer",),
+}
