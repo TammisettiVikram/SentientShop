@@ -1,10 +1,13 @@
 from pathlib import Path
-from datetime import timedelta
-from datetime import timedelta
+from dotenv import load_dotenv
 import os
+from datetime import timedelta
+from datetime import timedelta
 import dj_database_url
-
 BASE_DIR = Path(__file__).resolve().parent.parent
+env_path = BASE_DIR / ".env"
+load_dotenv(dotenv_path=env_path)
+
 ROOT_URLCONF = "core.urls"
 WSGI_APPLICATION = "core.wsgi.application"
 DATABASE_URL = os.environ.get("DATABASE_URL")
