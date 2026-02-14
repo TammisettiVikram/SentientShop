@@ -54,7 +54,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
-
+print("🚨 DATABASE_URL:", DATABASE_URL)
 if DATABASE_URL:
     # Railway / Postgres
     DATABASES = {
