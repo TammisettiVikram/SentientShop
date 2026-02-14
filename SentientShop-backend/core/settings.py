@@ -53,18 +53,23 @@ MIDDLEWARE = [
 CORS_ALLOW_ALL_ORIGINS = True
 
 if DATABASE_URL:
-    # Production (Railway / Postgres)
+    # Railway / Postgres
     DATABASES = {
-        "default": dj_database_url.parse(DATABASE_URL)
+        "default": dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True
+        )
     }
 else:
-    # Local development (SQLite)
+    # Local SQLite
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": BASE_DIR / "db.sqlite3",
         }
     }
+    
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 STATIC_URL = "/static/"
