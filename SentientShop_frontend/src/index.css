@@ -1,3 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.StripeElement {
+    width: 100%;
+    min-height: 40px;
+}
+
+.StripeElement iframe {
+    width: 100% !important;
+}

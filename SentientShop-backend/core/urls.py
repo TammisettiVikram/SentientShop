@@ -1,26 +1,18 @@
 from django.contrib import admin
-from django.urls import path
-from .views import CartView, CartItemDetailView
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from apps.carts.views import CartViewSet
-from apps.store.views import ProductViewSet
+from apps.store.views import AdminProductDetailView, AdminProductListCreateView, ProductViewSet
 
 router = DefaultRouter()
 router.register("products", ProductViewSet)
-router.register("cart", CartViewSet, basename="cart")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include(router.urls)),
-]
-urlpatterns += [
+    path("api/", include("apps.reviews.urls")),
+    path("api/admin/products/", AdminProductListCreateView.as_view()),
+    path("api/admin/products/<int:product_id>/", AdminProductDetailView.as_view()),
     path("api/auth/", include("apps.accounts.urls")),
-]
-urlpatterns += [
+    path("api/cart/", include("apps.carts.urls")),
     path("api/orders/", include("apps.orders.urls")),
-]
-urlpatterns = [
-    path("", CartView.as_view()),
-    path("<int:item_id>/", CartItemDetailView.as_view()),
 ]

@@ -9,10 +9,10 @@ ROOT_URLCONF = "core.urls"
 WSGI_APPLICATION = "core.wsgi.application"
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
-STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
-
-SECRET_KEY = "dev-secret-key"
-DEBUG = True
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
+STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET")
+SECRET_KEY = os.environ.get("SECRET_KEY")
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = ["*"]
 CSRF_TRUSTED_ORIGINS = [
@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "apps.store",
     "apps.carts",
     "apps.orders",
+    "apps.reviews",
 ]
 
 AUTH_USER_MODEL = "accounts.User"
@@ -72,7 +73,7 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": (
-        "rest_framework.permissions.IsAuthenticatedOrReadOnly",
+        "rest_framework.permissions.AllowAny",
     ),
 }
 

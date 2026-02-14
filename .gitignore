@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 # Optional npm cache directory
 .env
+config.toml
+stripe keys

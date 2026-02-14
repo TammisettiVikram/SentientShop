@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
-import { api } from "../api/clients";
+import api from "../api/clients";
 
 export default function CheckoutForm() {
     const stripe = useStripe();

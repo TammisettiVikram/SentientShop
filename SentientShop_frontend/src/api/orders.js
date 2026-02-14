@@ -1,4 +1,4 @@
-import { api } from "./clients";
+import api from "./clients";
 
 export const checkout = async () => {
     const response = await api.post("orders/checkout/");

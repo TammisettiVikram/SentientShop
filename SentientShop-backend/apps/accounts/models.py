@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.contrib.auth.models import BaseUserManager
 
@@ -25,7 +26,22 @@ class UserManager(BaseUserManager):
 
         return self.create_user(email, password, **extra_fields)
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(AbstractUser):
+
+    ROLE_CHOICES = (
+        ("CUSTOMER", "Customer"),
+        ("ADMIN", "Admin"),
+        ("SUPPORT", "Support"),
+    )
+
+    role = models.CharField(
+        max_length=20,
+        choices=ROLE_CHOICES,
+        default="CUSTOMER"
+    )
+
+    def __str__(self):
+        return f"{self.username} ({self.role})"
     email = models.EmailField(unique=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
