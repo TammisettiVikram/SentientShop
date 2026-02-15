@@ -1,84 +1,226 @@
-# SentientShop
+# 🛒 SentientShop — Full Stack E-Commerce Platform
 
-Full-stack ecommerce app:
-- Backend: Django + DRF + JWT + Stripe
-- Frontend: React + Vite + Tailwind
+SentientShop is a production-ready full stack e-commerce application built with Django REST Framework and React.  
+It supports product management, cart and checkout, Stripe payments, role-based access control, reviews, and admin dashboards.
 
-## Project Structure
+Designed to demonstrate real-world backend architecture, API design, secure authentication, and cloud deployment.
 
-- `SentientShop-backend` - Django API
-- `SentientShop_frontend` - React app
+---
 
-## Local Setup
+## 🚀 Live Demo
 
-### 1. Backend
+Frontend: https://sentientshop-frontend.vercel.app 
+Backend API: https://sentientshop-production.up.railway.app  
 
-```bash
-cd SentientShop-backend
+Admin Panel:  
+https://sentientshop-production.up.railway.app/admin/
+
+---
+
+## 🧠 Features
+
+### 🛍 Store
+- Product catalog with categories
+- Product variants (size, color, price, stock)
+- Product detail pages
+- Review system (only after purchase)
+
+### 🛒 Cart
+- Guest cart support
+- Authenticated user cart
+- Quantity management
+- Persistent cart storage
+
+### 💳 Payments
+- Stripe integration
+- Secure checkout flow
+- Webhook handling
+- Order status updates
+
+### 📦 Orders
+- Order history
+- Payment status tracking
+- Invoice-style order view
+
+### 🔐 Authentication
+- JWT authentication
+- Login / Register
+- Password update
+- Secure API access
+
+### 👥 Role-Based Access Control (RBAC)
+- User role
+- Admin role
+- Staff permissions
+- Protected endpoints
+
+### 📊 Admin Dashboard
+- Order metrics
+- Revenue summary
+- Product CRUD
+- User management
+
+---
+
+## 🏗 Tech Stack
+
+### Backend
+- Django
+- Django REST Framework
+- PostgreSQL
+- Stripe API
+- SimpleJWT
+- Gunicorn
+- WhiteNoise
+
+### Frontend
+- React
+- Vite
+- Axios
+- Tailwind CSS
+- Stripe Elements
+
+### Infrastructure
+- Railway (Backend + Postgres)
+- Vercel (Frontend)
+- Environment variables for secrets
+
+---
+
+## 📂 Project Structure
+
+SentientShop/
+│
+├── SentientShop-backend/
+│ ├── apps/
+│ │ ├── accounts
+│ │ ├── store
+│ │ ├── carts
+│ │ ├── orders
+│ │ └── reviews
+│ ├── core/
+│ └── manage.py
+│
+├── SentientShop_frontend/
+│ ├── src/
+│ └── vite.config.js
+│
+└── README.md
+
+---
+
+## ⚙️ Environment Variables
+
+### Backend (.env)
+
+SECRET_KEY=your-secret
+DEBUG=False
+
+DATABASE_URL=postgres-url
+
+STRIPE_SECRET_KEY=sk_test_xxx
+STRIPE_WEBHOOK_SECRET=whsec_xxx
+
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=strongpassword
+
+---
+
+### Frontend (.env)
+
+VITE_API_BASE_URL=https://sentientshop-production.up.railway.app
+VITE_STRIPE_PUBLISHABLE_KEY=pk_test_xxx
+
+---
+
+## 🛠 Local Setup
+
+### 1️⃣ Clone repo
+
+git clone https://github.com/TammisettiVikram/sentientshop.git
+cd sentientshop
+
+---
+
+### 2️⃣ Backend
+
+cd backend
+
+python -m venv venv
+source venv/bin/activate # Windows: venv\Scripts\activate
+
 pip install -r requirements.txt
+
 python manage.py migrate
+python manage.py createsuperuser
 python manage.py runserver
-```
 
-Create `SentientShop-backend/.env` with:
+---
 
-```env
-SECRET_KEY=your_secret_key
-DEBUG=True
-DATABASE_URL=
-STRIPE_SECRET_KEY=your_stripe_secret
-STRIPE_WEBHOOK_SECRET=your_webhook_secret
-```
+### 3️⃣ Frontend
 
-### 2. Frontend
+cd frontend
 
-```bash
-cd SentientShop_frontend
 npm install
 npm run dev
-```
 
-Create `SentientShop_frontend/.env` with:
+---
 
-```env
-VITE_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
-```
+## 🔄 Stripe Webhook (Local)
 
-## Railway Deploy (Backend)
+stripe listen --forward-to localhost:8000/api/orders/webhook/
 
-The backend uses `SentientShop-backend/Procfile`:
+---
 
-```procfile
-release: python manage.py migrate && python manage.py createsuperuser --noinput || true
-web: gunicorn core.wsgi:application
-```
+## 🚢 Deployment
 
-### Required Railway Variables
+### Backend — Railway
+- Connect GitHub repo
+- Add environment variables
+- Run migrations automatically
+- Start with Gunicorn
 
-- `SECRET_KEY`
-- `DEBUG=False`
-- `DATABASE_URL` (Railway Postgres connection string)
-- `STRIPE_SECRET_KEY`
-- `STRIPE_WEBHOOK_SECRET`
-- `DJANGO_SUPERUSER_USERNAME`
-- `DJANGO_SUPERUSER_EMAIL`
-- `DJANGO_SUPERUSER_PASSWORD`
+### Frontend — Vercel
+- Connect repo
+- Add environment variables
+- Deploy
 
-`release` step runs migrations on each deploy and attempts superuser creation.  
-If the superuser already exists, deploy continues because of `|| true`.
+---
 
-## Common Commands
+## 🧩 Key Architecture Decisions
 
-Backend checks:
+- Decoupled frontend + backend for scalability
+- JWT instead of session auth for API security
+- Webhook-driven payment confirmation
+- PostgreSQL for production reliability
+- RBAC implemented at API layer
 
-```bash
-cd SentientShop-backend
-python manage.py check
-```
+---
 
-Frontend build:
+## 📈 Future Improvements
 
-```bash
-cd SentientShop_frontend
-npm run build
-```
+- Email notifications
+- Inventory alerts
+- Refund workflow
+- Order tracking
+- Search + filtering
+- Redis caching
+- Background jobs (Celery)
+- Docker support
+
+---
+
+## 👨‍💻 Author
+
+Vikram Tammisetti
+
+Backend-focused full stack developer passionate about building production systems.
+
+Skills:
+Python • Django • FastAPI • React • PostgreSQL • Stripe • Cloud Deployment
+
+---
+
+## 📜 License
+
+MIT License — feel free to use and modify.
