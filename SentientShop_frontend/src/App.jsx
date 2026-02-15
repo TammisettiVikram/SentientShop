@@ -9,6 +9,7 @@ import Register from "./pages/Register";
 import AdminDashboard from "./pages/AdminDashboard";
 import Payment from "./pages/Payment";
 import UserDashboard from "./pages/UserDashboard";
+import PaymentSuccess from "./pages/PaymentSuccess";
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
       <Route path="/dashboard" element={<UserDashboard />} />
       <Route path="/checkout" element={<Checkout />} />
       <Route path="/payment" element={<Payment />} />
+      <Route path="/payment-success" element={<PaymentSuccess />} />
       <Route path="/admin" element={<AdminDashboard />} />
     </Routes>
   );

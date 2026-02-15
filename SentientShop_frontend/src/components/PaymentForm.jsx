@@ -1,8 +1,10 @@
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 import api from "../api/clients";
+import { Spinner } from "./LoadingUI";
 
 export default function PaymentForm({ total }) {
   const stripe = useStripe();
@@ -26,12 +28,13 @@ export default function PaymentForm({ total }) {
       });
 
       if (result.error) {
-        alert(result.error.message);
+        toast.error(result.error.message || "Payment failed");
       } else if (result.paymentIntent.status === "succeeded") {
-        navigate("/orders");
+        toast.success("Order placed successfully");
+        navigate(`/payment-success?order_id=${data.order_id}`);
       }
     } catch {
-      alert("Payment failed.");
+      toast.error("Payment failed.");
     } finally {
       setLoading(false);
     }
@@ -47,7 +50,7 @@ export default function PaymentForm({ total }) {
         disabled={!stripe || loading}
         className="w-full rounded-lg bg-slate-900 py-2.5 text-sm font-semibold text-white hover:bg-black disabled:cursor-not-allowed disabled:opacity-70"
       >
-        {loading ? "Processing..." : `Pay Rs. ${total.toFixed(2)}`}
+        {loading ? <Spinner label="Processing payment..." /> : `Pay Rs. ${total.toFixed(2)}`}
       </button>
     </form>
   );

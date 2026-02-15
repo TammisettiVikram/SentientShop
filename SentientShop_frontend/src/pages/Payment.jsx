@@ -1,14 +1,19 @@
 import { useEffect, useState } from "react";
 import { CardElement, Elements, useElements, useStripe } from "@stripe/react-stripe-js";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 import api from "../api/clients";
+import { Spinner } from "../components/LoadingUI";
 import { stripePromise } from "../api/stripe";
 
 function PaymentForm() {
   const stripe = useStripe();
   const elements = useElements();
+  const navigate = useNavigate();
   const [clientSecret, setClientSecret] = useState("");
   const [statusText, setStatusText] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     api.post("/orders/create-payment-intent/").then((res) => setClientSecret(res.data.client_secret));
@@ -20,15 +25,20 @@ function PaymentForm() {
       return;
     }
 
+    setLoading(true);
     const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
       payment_method: { card: elements.getElement(CardElement) },
     });
 
     if (error) {
       setStatusText(error.message || "Payment failed.");
+      toast.error(error.message || "Payment failed.");
     } else if (paymentIntent.status === "succeeded") {
       setStatusText("Payment successful.");
+      toast.success("Order placed successfully");
+      navigate("/payment-success");
     }
+    setLoading(false);
   };
 
   return (
@@ -39,10 +49,10 @@ function PaymentForm() {
       {statusText ? <p className="text-sm text-slate-700">{statusText}</p> : null}
       <button
         type="submit"
-        disabled={!stripe || !clientSecret}
+        disabled={!stripe || !clientSecret || loading}
         className="w-full rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-black disabled:cursor-not-allowed disabled:opacity-70"
       >
-        Pay Now
+        {loading ? <Spinner label="Processing payment..." /> : "Pay Now"}
       </button>
     </form>
   );

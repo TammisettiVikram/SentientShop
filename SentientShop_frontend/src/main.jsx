@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
+import { Toaster } from "react-hot-toast";
 import "./index.css";
 import App from "./App";
 
@@ -21,6 +22,12 @@ function ThemeShell() {
 
   return (
     <>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          style: { background: "#11243b", color: "#dbeafe", border: "1px solid #31547e" },
+        }}
+      />
       <button
         onClick={() => setTheme((prev) => (prev === "dark" ? "light" : "dark"))}
         className="fixed bottom-4 right-4 z-50 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-md"

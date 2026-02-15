@@ -5,6 +5,7 @@ import api from "../api/clients";
 
 const ORDER_STATUS_OPTIONS = ["PENDING", "PAID", "SHIPPED", "DELIVERED", "CANCELLED"];
 const USER_ROLE_OPTIONS = ["CUSTOMER", "ADMIN", "SUPPORT"];
+const PAGE_SIZE = 8;
 const newVariantTemplate = {
   id: null,
   size: "",
@@ -29,6 +30,15 @@ export default function AdminDashboard() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [productForm, setProductForm] = useState(emptyProductForm);
+  const [collapsed, setCollapsed] = useState({
+    revenue: false,
+    orders: false,
+    products: false,
+    users: false,
+  });
+  const [orderPage, setOrderPage] = useState(1);
+  const [productPage, setProductPage] = useState(1);
+  const [userPage, setUserPage] = useState(1);
 
   const fetchData = async () => {
     setLoading(true);
@@ -69,6 +79,21 @@ export default function AdminDashboard() {
     });
     return Array.from(map.values()).sort((a, b) => (a.date < b.date ? -1 : 1));
   }, [dashboard]);
+
+  const pagedOrders = useMemo(() => {
+    const start = (orderPage - 1) * PAGE_SIZE;
+    return dashboard?.orders?.slice(start, start + PAGE_SIZE) || [];
+  }, [dashboard, orderPage]);
+
+  const pagedProducts = useMemo(() => {
+    const start = (productPage - 1) * PAGE_SIZE;
+    return products.slice(start, start + PAGE_SIZE);
+  }, [products, productPage]);
+
+  const pagedUsers = useMemo(() => {
+    const start = (userPage - 1) * PAGE_SIZE;
+    return users.slice(start, start + PAGE_SIZE);
+  }, [users, userPage]);
 
   const updateOrderStatus = async (orderId, status) => {
     setDashboard((prev) => ({
@@ -221,7 +246,13 @@ export default function AdminDashboard() {
         </section>
 
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="mb-4 text-xl font-bold text-slate-900">Revenue Summary</h2>
+          <SectionHeader
+            title="Revenue Summary"
+            collapsed={collapsed.revenue}
+            onToggle={() => setCollapsed((prev) => ({ ...prev, revenue: !prev.revenue }))}
+          />
+          {!collapsed.revenue ? (
+            <>
           <div className="mb-4 h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartRows}>
@@ -243,10 +274,18 @@ export default function AdminDashboard() {
               </div>
             ))}
           </div>
+            </>
+          ) : null}
         </section>
 
         <section className="overflow-x-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <h2 className="mb-4 text-xl font-bold text-slate-900">Order Management</h2>
+          <SectionHeader
+            title="Order Management"
+            collapsed={collapsed.orders}
+            onToggle={() => setCollapsed((prev) => ({ ...prev, orders: !prev.orders }))}
+          />
+          {!collapsed.orders ? (
+            <>
           <table className="w-full min-w-[700px]">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50 text-left text-sm text-slate-600">
@@ -257,7 +296,7 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody>
-              {dashboard.orders.map((order) => (
+              {pagedOrders.map((order) => (
                 <tr key={order.id} className="border-b border-slate-100 text-sm">
                   <td className="p-2 font-semibold text-slate-800">#{order.id}</td>
                   <td className="p-2 text-slate-700">{order.user}</td>
@@ -279,10 +318,24 @@ export default function AdminDashboard() {
               ))}
             </tbody>
           </table>
+          <PaginationControls
+            page={orderPage}
+            setPage={setOrderPage}
+            totalItems={dashboard.orders.length}
+            pageSize={PAGE_SIZE}
+          />
+            </>
+          ) : null}
         </section>
 
         <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <h2 className="mb-4 text-xl font-bold text-slate-900">Product CRUD</h2>
+          <SectionHeader
+            title="Product CRUD"
+            collapsed={collapsed.products}
+            onToggle={() => setCollapsed((prev) => ({ ...prev, products: !prev.products }))}
+          />
+          {!collapsed.products ? (
+            <>
           <form onSubmit={createProduct} className="mb-5 grid gap-2 md:grid-cols-6">
             <input
               placeholder="Name"
@@ -335,7 +388,7 @@ export default function AdminDashboard() {
           </form>
 
           <div className="space-y-4">
-            {products.map((product) => (
+            {pagedProducts.map((product) => (
               <div key={product.id} className="rounded-xl border border-slate-200 p-3">
                 <div className="mb-2 grid gap-2 md:grid-cols-3">
                   <input
@@ -404,10 +457,24 @@ export default function AdminDashboard() {
               </div>
             ))}
           </div>
+          <PaginationControls
+            page={productPage}
+            setPage={setProductPage}
+            totalItems={products.length}
+            pageSize={PAGE_SIZE}
+          />
+            </>
+          ) : null}
         </section>
 
         <section className="overflow-x-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <h2 className="mb-4 text-xl font-bold text-slate-900">User Management</h2>
+          <SectionHeader
+            title="User Management"
+            collapsed={collapsed.users}
+            onToggle={() => setCollapsed((prev) => ({ ...prev, users: !prev.users }))}
+          />
+          {!collapsed.users ? (
+            <>
           <table className="w-full min-w-[700px]">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50 text-left text-sm text-slate-600">
@@ -419,7 +486,7 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
+              {pagedUsers.map((user) => (
                 <tr key={user.id} className="border-b border-slate-100 text-sm">
                   <td className="p-2">{user.email}</td>
                   <td className="p-2">
@@ -458,6 +525,14 @@ export default function AdminDashboard() {
               ))}
             </tbody>
           </table>
+          <PaginationControls
+            page={userPage}
+            setPage={setUserPage}
+            totalItems={users.length}
+            pageSize={PAGE_SIZE}
+          />
+            </>
+          ) : null}
         </section>
       </div>
     </div>
@@ -470,5 +545,41 @@ function StatCard({ label, value }) {
       <p className="text-sm text-slate-500">{label}</p>
       <p className="mt-1 text-2xl font-black text-slate-900">{value}</p>
     </article>
+  );
+}
+
+function SectionHeader({ title, collapsed, onToggle }) {
+  return (
+    <div className="mb-4 flex items-center justify-between">
+      <h2 className="text-xl font-bold text-slate-900">{title}</h2>
+      <button onClick={onToggle} className="rounded border border-slate-300 px-3 py-1 text-sm text-slate-700">
+        {collapsed ? "Expand" : "Collapse"}
+      </button>
+    </div>
+  );
+}
+
+function PaginationControls({ page, setPage, totalItems, pageSize }) {
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+  return (
+    <div className="mt-3 flex items-center justify-end gap-2">
+      <button
+        onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+        disabled={page === 1}
+        className="rounded border border-slate-300 px-3 py-1 text-sm disabled:opacity-50"
+      >
+        Prev
+      </button>
+      <p className="text-sm text-slate-600">
+        Page {page} / {totalPages}
+      </p>
+      <button
+        onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+        disabled={page === totalPages}
+        className="rounded border border-slate-300 px-3 py-1 text-sm disabled:opacity-50"
+      >
+        Next
+      </button>
+    </div>
   );
 }

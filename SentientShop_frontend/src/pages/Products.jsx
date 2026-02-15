@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import api from "../api/clients";
+import { SkeletonCard } from "../components/LoadingUI";
 import { getProductImage } from "../utils/productImages";
 
 const CATEGORIES = [
@@ -22,15 +23,21 @@ const CATEGORY_BANNERS = {
 
 export default function Products() {
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [inStockOnly, setInStockOnly] = useState(false);
   const { categorySlug } = useParams();
   const navigate = useNavigate();
   const activeCategory = categorySlug ? CATEGORY_BY_SLUG[categorySlug] : null;
 
   useEffect(() => {
+    setLoading(true);
     api
       .get("/products/")
       .then((res) => setProducts(res.data))
-      .catch(() => setProducts([]));
+      .catch(() => setProducts([]))
+      .finally(() => setLoading(false));
   }, []);
 
   useEffect(() => {
@@ -40,11 +47,19 @@ export default function Products() {
   }, [categorySlug, navigate]);
 
   const filteredProducts = useMemo(() => {
-    if (!activeCategory) {
-      return products;
-    }
-    return products.filter((product) => product.category === activeCategory.key);
-  }, [products, activeCategory]);
+    const normalizedSearch = search.trim().toLowerCase();
+    return products
+      .filter((product) => (!activeCategory ? true : product.category === activeCategory.key))
+      .filter((product) => (normalizedSearch ? product.name.toLowerCase().includes(normalizedSearch) : true))
+      .filter((product) => {
+        if (!maxPrice) {
+          return true;
+        }
+        const floorPrice = Math.min(...product.variants.map((variant) => Number(variant.price)));
+        return floorPrice <= Number(maxPrice);
+      })
+      .filter((product) => (inStockOnly ? product.variants.some((variant) => Number(variant.stock) > 0) : true));
+  }, [products, activeCategory, search, maxPrice, inStockOnly]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-stone-100 to-slate-200 px-4 py-10">
@@ -86,6 +101,25 @@ export default function Products() {
               </button>
             ))}
           </div>
+          <div className="mt-4 grid gap-2 md:grid-cols-3">
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search products"
+              className="rounded border border-slate-300 px-3 py-2 text-sm"
+            />
+            <input
+              type="number"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(e.target.value)}
+              placeholder="Max price"
+              className="rounded border border-slate-300 px-3 py-2 text-sm"
+            />
+            <label className="flex items-center gap-2 rounded border border-slate-300 px-3 py-2 text-sm text-slate-700">
+              <input type="checkbox" checked={inStockOnly} onChange={(e) => setInStockOnly(e.target.checked)} />
+              In-stock only
+            </label>
+          </div>
         </section>
 
         <section className="mb-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -110,9 +144,15 @@ export default function Products() {
           ))}
         </section>
 
-        {!filteredProducts.length ? (
+        {loading ? (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {[...Array(6)].map((_, idx) => (
+              <SkeletonCard key={idx} />
+            ))}
+          </div>
+        ) : !filteredProducts.length ? (
           <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-slate-600">
-            No products found for this category.
+            No products found. Try a different filter or category.
           </div>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

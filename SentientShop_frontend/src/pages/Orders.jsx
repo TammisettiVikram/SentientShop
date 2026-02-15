@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import api from "../api/clients";
+import { SkeletonRow } from "../components/LoadingUI";
 
 const STATUS_BADGES = {
   PENDING: { label: "Pending", icon: "🟡", className: "bg-yellow-100 text-yellow-800 border-yellow-200" },
@@ -13,13 +14,27 @@ const STATUS_BADGES = {
 
 export default function Orders() {
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     api
       .get("/orders/")
       .then((res) => setOrders(res.data))
-      .catch(() => setOrders([]));
+      .catch(() => setOrders([]))
+      .finally(() => setLoading(false));
   }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-100 px-4 py-10">
+        <div className="mx-auto max-w-3xl space-y-3">
+          {[...Array(4)].map((_, idx) => (
+            <SkeletonRow key={idx} />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   if (!orders.length) {
     return (

@@ -1,13 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import toast from "react-hot-toast";
 
 import api from "../api/clients";
+import { SkeletonCard } from "../components/LoadingUI";
 import { addToGuestCart } from "../utils/cart";
 import { getProductImage } from "../utils/productImages";
 
 export default function ProductDetails() {
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [selectedVariantId, setSelectedVariantId] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [reviewDraft, setReviewDraft] = useState({ rating: "5", comment: "" });
@@ -16,13 +19,15 @@ export default function ProductDetails() {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
+    setLoading(true);
     api
       .get(`/products/${productId}/`)
       .then((res) => {
         setProduct(res.data);
         setSelectedVariantId(res.data.variants?.[0]?.id || null);
       })
-      .catch(() => setProduct(null));
+      .catch(() => setProduct(null))
+      .finally(() => setLoading(false));
   }, [productId]);
 
   const fetchReviews = async () => {
@@ -50,6 +55,7 @@ export default function ProductDetails() {
     try {
       await api.post("/cart/", { variant: selectedVariant.id, quantity: 1 });
       setMessage("Item added to your cart.");
+      toast.success("Item added to cart");
     } catch {
       addToGuestCart({
         variant_id: selectedVariant.id,
@@ -60,6 +66,7 @@ export default function ProductDetails() {
         quantity: 1,
       });
       setMessage("Item added to guest cart. Login to sync it.");
+      toast.success("Item added to cart");
     }
     setTimeout(() => setMessage(""), 2400);
   };
@@ -71,12 +78,24 @@ export default function ProductDetails() {
         comment: reviewDraft.comment,
       });
       setReviewMessage("Review saved.");
+      toast.success("Review submitted");
       setReviewDraft({ rating: "5", comment: "" });
       fetchReviews();
     } catch (err) {
       setReviewMessage(err.response?.data?.detail || "Review could not be submitted.");
+      toast.error(err.response?.data?.detail || "Review could not be submitted.");
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-100 px-4 py-10">
+        <div className="mx-auto max-w-4xl">
+          <SkeletonCard />
+        </div>
+      </div>
+    );
+  }
 
   if (!product) {
     return <div className="p-8 text-slate-600">Loading product...</div>;

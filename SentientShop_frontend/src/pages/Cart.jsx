@@ -1,15 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Elements } from "@stripe/react-stripe-js";
+import toast from "react-hot-toast";
 
 import PaymentForm from "../components/PaymentForm";
 import api from "../api/clients";
+import { SkeletonRow } from "../components/LoadingUI";
 import { stripePromise } from "../api/stripe";
 import { getGuestCart, setGuestCart } from "../utils/cart";
 
 export default function Cart() {
   const [items, setItems] = useState([]);
   const [isGuest, setIsGuest] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const fetchCart = async () => {
     const token = localStorage.getItem("token");
@@ -17,6 +20,7 @@ export default function Cart() {
     if (!token) {
       setItems(getGuestCart());
       setIsGuest(true);
+      setLoading(false);
       return;
     }
 
@@ -26,6 +30,8 @@ export default function Cart() {
       setIsGuest(false);
     } catch {
       setItems([]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -47,6 +53,7 @@ export default function Cart() {
 
     await api.patch(`/cart/${itemId}/`, { quantity: newQty });
     fetchCart();
+    toast.success("Cart updated");
   };
 
   const removeItem = async (itemId) => {
@@ -59,6 +66,7 @@ export default function Cart() {
 
     await api.delete(`/cart/${itemId}/`);
     fetchCart();
+    toast.success("Item removed from cart");
   };
 
   const total = useMemo(
@@ -76,7 +84,13 @@ export default function Cart() {
           </Link>
         </header>
 
-        {items.length === 0 ? (
+        {loading ? (
+          <div className="space-y-3">
+            {[...Array(3)].map((_, idx) => (
+              <SkeletonRow key={idx} />
+            ))}
+          </div>
+        ) : items.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center">
             <p className="text-slate-600">Your cart is empty.</p>
           </div>

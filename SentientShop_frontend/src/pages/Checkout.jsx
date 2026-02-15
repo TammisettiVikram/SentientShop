@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 import api from "../api/clients";
+import { Spinner } from "../components/LoadingUI";
 
 export default function Checkout() {
   const stripe = useStripe();
   const elements = useElements();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -27,11 +31,15 @@ export default function Checkout() {
 
       if (result.error) {
         setMessage(result.error.message || "Payment failed.");
+        toast.error(result.error.message || "Payment failed.");
       } else if (result.paymentIntent.status === "succeeded") {
         setMessage("Payment successful.");
+        toast.success("Order placed successfully");
+        navigate(`/payment-success?order_id=${data.order_id}`);
       }
     } catch {
       setMessage("Could not initialize payment.");
+      toast.error("Could not initialize payment.");
     } finally {
       setLoading(false);
     }
@@ -54,7 +62,7 @@ export default function Checkout() {
           disabled={!stripe || loading}
           className="mt-5 w-full rounded-lg bg-slate-900 px-4 py-2.5 font-semibold text-white hover:bg-black disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {loading ? "Processing..." : "Pay Now"}
+          {loading ? <Spinner label="Processing payment..." /> : "Pay Now"}
         </button>
       </div>
     </div>
