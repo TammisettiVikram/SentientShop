@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
 
-    "apps.accounts.apps.AccountsConfig",
+    "apps.accounts",
     "apps.store",
     "apps.carts",
     "apps.orders",
