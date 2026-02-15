@@ -2,7 +2,6 @@ from pathlib import Path
 from dotenv import load_dotenv
 import os
 from datetime import timedelta
-from django.contrib.auth import get_user_model
 import dj_database_url
 BASE_DIR = Path(__file__).resolve().parent.parent
 env_path = BASE_DIR / ".env"
@@ -34,7 +33,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
 
-    "apps.accounts",
+    "apps.accounts.apps.AccountsConfig",
     "apps.store",
     "apps.carts",
     "apps.orders",
@@ -114,17 +113,3 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
-if os.environ.get("AUTO_CREATE_ADMIN", "False") == "True":
-    try:
-        User = get_user_model()
-        if not User.objects.filter(username="admin").exists():
-            User.objects.create_superuser(
-                username="admin",
-                email="vikramtammisetti@gmail.com",
-                password="2D@Anime"
-            )
-            print("✅ Admin user created")
-        else:
-            print("ℹ️ Admin already exists")
-    except Exception as e:
-        print("⚠️ Admin creation failed:", e)
