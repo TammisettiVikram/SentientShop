@@ -10,3 +10,70 @@
 .StripeElement iframe {
     width: 100% !important;
 }
+
+html.theme-dark body {
+    background: #0b1727;
+    color: #dbeafe;
+}
+
+html.theme-dark .bg-white {
+    background-color: #11243b !important;
+}
+
+html.theme-dark .bg-slate-50 {
+    background-color: #17314f !important;
+}
+
+html.theme-dark .bg-slate-100 {
+    background-color: #0f2136 !important;
+}
+
+html.theme-dark .bg-slate-200 {
+    background-color: #17314f !important;
+}
+
+html.theme-dark .bg-slate-900 {
+    background-color: #2563eb !important;
+}
+
+html.theme-dark .text-slate-900 {
+    color: #eff6ff !important;
+}
+
+html.theme-dark .text-slate-800 {
+    color: #dbeafe !important;
+}
+
+html.theme-dark .text-slate-700 {
+    color: #bfdbfe !important;
+}
+
+html.theme-dark .text-slate-600 {
+    color: #93c5fd !important;
+}
+
+html.theme-dark .text-slate-500 {
+    color: #93c5fd !important;
+}
+
+html.theme-dark .border-slate-100,
+html.theme-dark .border-slate-200,
+html.theme-dark .border-slate-300 {
+    border-color: #31547e !important;
+}
+
+html.theme-dark .from-slate-100 {
+    --tw-gradient-from: #0f2136 var(--tw-gradient-from-position) !important;
+}
+
+html.theme-dark .via-stone-100 {
+    --tw-gradient-via: #17314f var(--tw-gradient-via-position) !important;
+}
+
+html.theme-dark .to-slate-200 {
+    --tw-gradient-to: #0f2136 var(--tw-gradient-to-position) !important;
+}
+
+html.theme-dark .hover\:bg-slate-100:hover {
+    background-color: #1e3a5f !important;
+}

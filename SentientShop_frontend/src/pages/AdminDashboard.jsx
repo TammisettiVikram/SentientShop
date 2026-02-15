@@ -5,6 +5,13 @@ import api from "../api/clients";
 
 const ORDER_STATUS_OPTIONS = ["PENDING", "PAID", "SHIPPED", "DELIVERED", "CANCELLED"];
 const USER_ROLE_OPTIONS = ["CUSTOMER", "ADMIN", "SUPPORT"];
+const newVariantTemplate = {
+  id: null,
+  size: "",
+  color: "",
+  price: "",
+  stock: "",
+};
 
 const emptyProductForm = {
   name: "",
@@ -115,17 +122,43 @@ export default function AdminDashboard() {
     );
   };
 
+  const addVariantRow = (productId) => {
+    setProducts((prev) =>
+      prev.map((product) =>
+        product.id !== productId
+          ? product
+          : {
+              ...product,
+              variants: [...product.variants, { ...newVariantTemplate, id: `new-${Date.now()}-${Math.random()}` }],
+            }
+      )
+    );
+  };
+
+  const removeVariantRow = (productId, variantId) => {
+    setProducts((prev) =>
+      prev.map((product) =>
+        product.id !== productId
+          ? product
+          : {
+              ...product,
+              variants: product.variants.filter((variant) => variant.id !== variantId),
+            }
+      )
+    );
+  };
+
   const saveProduct = async (product) => {
     try {
       await api.patch(`/admin/products/${product.id}/`, {
         name: product.name,
         description: product.description,
         variants: product.variants.map((variant) => ({
-          id: variant.id,
+          ...(typeof variant.id === "number" ? { id: variant.id } : {}),
           size: variant.size,
           color: variant.color,
-          price: Number(variant.price),
-          stock: Number(variant.stock),
+          price: Number(variant.price || 0),
+          stock: Number(variant.stock || 0),
         })),
       });
     } catch {
@@ -318,7 +351,7 @@ export default function AdminDashboard() {
                 </div>
 
                 {product.variants.map((variant) => (
-                  <div key={variant.id} className="mb-2 grid gap-2 md:grid-cols-4">
+                  <div key={variant.id} className="mb-2 grid gap-2 md:grid-cols-5">
                     <input
                       value={variant.size}
                       onChange={(e) => updateVariantField(product.id, variant.id, "size", e.target.value)}
@@ -342,10 +375,22 @@ export default function AdminDashboard() {
                       onChange={(e) => updateVariantField(product.id, variant.id, "stock", e.target.value)}
                       className="rounded border border-slate-300 px-2 py-1"
                     />
+                    <button
+                      onClick={() => removeVariantRow(product.id, variant.id)}
+                      className="rounded border border-red-200 px-2 py-1 text-red-600"
+                    >
+                      Remove
+                    </button>
                   </div>
                 ))}
 
                 <div className="flex gap-2">
+                  <button
+                    onClick={() => addVariantRow(product.id)}
+                    className="rounded border border-slate-300 px-3 py-1 text-slate-700"
+                  >
+                    Add Variant
+                  </button>
                   <button onClick={() => saveProduct(product)} className="rounded bg-slate-900 px-3 py-1 text-white">
                     Save
                   </button>
