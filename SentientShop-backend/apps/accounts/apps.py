@@ -1,3 +1,4 @@
+import os
 from django.apps import AppConfig
 
 class AccountsConfig(AppConfig):
@@ -18,8 +19,8 @@ class AccountsConfig(AppConfig):
             if not User.objects.filter(username="admin").exists():
                 User.objects.create_superuser(
                     username="admin",
-                    email="vikramtammisetti@gmail.com",
-                    password="2D@Anime"
+                    email = os.getenv("ADMIN_EMAIL"),
+                    password = os.getenv("ADMIN_PASSWORD")
                 )
                 print("✅ Admin created")
             else:
